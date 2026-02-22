@@ -32,6 +32,7 @@ const getInitialData = (): GasProtocolData => {
     vehicleRegNo: '',
     vehicleMake: '',
     vehicleModel: '',
+    installationDate: today,
     installationType: 'ВНГ',
     installationMake: '',
     installationModel: '',
@@ -436,7 +437,7 @@ export default function App() {
                               rel="noopener noreferrer"
                               className="text-blue-600 hover:underline flex items-center gap-2 text-sm break-all"
                             >
-                              <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                              <ExternalLink className="w-4 h-4 shrink-0" />
                               {publishedUrl}
                             </a>
                           </div>

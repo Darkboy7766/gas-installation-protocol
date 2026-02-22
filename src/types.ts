@@ -15,6 +15,7 @@ export interface GasProtocolData {
   // Section III: Owner
 
   // Section IV: Installation
+  installationDate: string;
   installationType: 'ВНГ' | 'СПГ';
   installationMake: string;
   installationModel: string;
