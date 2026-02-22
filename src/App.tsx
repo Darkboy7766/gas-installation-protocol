@@ -506,7 +506,7 @@ export default function App() {
         ) : (
           /* Print View */
           <div className="print-container max-w-[210mm] mx-auto bg-white shadow-2xl print:shadow-none p-[10mm] text-[12pt] leading-relaxed font-serif">
-            <div className="text-center mb-5">
+            <div className="text-center mb-8">
               <h2 className="text-[16pt] font-bold mb-2">Протокол № {data.protocolNumber || '.........'} / {data.protocolDate ? new Date(data.protocolDate).toLocaleDateString('bg-BG') : '..........'}</h2>
               <p className="text-[11pt] leading-tight">
                 за допълнително монтиране на моторно превозно средство на уредба, която позволява<br />
