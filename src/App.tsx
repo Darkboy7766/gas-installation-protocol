@@ -30,25 +30,13 @@ const getInitialData = (): GasProtocolData => {
     installerId: '202347382',
     installerAddress: 'Варна бул.Хр.Смирненски',
     vehicleRegNo: '',
-    vehicleVin: '',
     vehicleMake: '',
     vehicleModel: '',
-    vehicleCategory: '',
-    vehicleFirstRegDate: '',
-    vehicleFuelType: '',
-    vehicleEngineNo: '',
-    ownerName: '',
-    ownerId: '',
-    ownerAddress: '',
-    installationDate: today,
     installationType: 'ВНГ',
     installationMake: '',
     installationModel: '',
     components: INITIAL_COMPONENTS,
-    installerFullName: '',
-    ownerFullName: '',
     issuerFullName: 'Аутогаз-Варна ООД',
-    issuerPosition: '',
     issueDate: today,
     issuePlace: 'Варна',
   };
@@ -310,12 +298,7 @@ export default function App() {
                             <option value="СПГ">СПГ (CNG)</option>
                           </select>
                         </div>
-                        <div className="space-y-1.5">
-                          <label className="block text-sm font-medium text-blue-800 mb-2">Дата на монтиране</label>
-                          <div className="px-4 py-2 bg-white border border-blue-200 rounded-lg text-gray-700">
-                            {data.installationDate ? new Date(data.installationDate).toLocaleDateString('bg-BG') : ''}
-                          </div>
-                        </div>
+                        
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
                         <FormField label="Марка на уредбата" name="installationMake" value={data.installationMake} onChange={handleInputChange} />
@@ -554,8 +537,8 @@ export default function App() {
             <section className="mb-4">
               <h3 className="font-bold italic mb-2 text-[11pt]">III. Данни за монтираната уредба за ВНГ или СПГ:</h3>
               <p className="ml-4 mb-2 text-[11pt]">
-                Марка: <span className="underline px-2 font-bold">{data.installationMake || '................'}</span>, 
-                модел: <span className="underline px-2 font-bold">{data.installationModel || '................'}</span>, 
+                Марка: <span className="px-2 font-bold">{data.installationMake || '................'}</span>, 
+                модел: <span className="px-2 font-bold">{data.installationModel || '................'}</span>, 
                 състояща се от следните компоненти:
               </p>
 
@@ -592,7 +575,7 @@ export default function App() {
               <div className="grid grid-cols-2 gap-10">
                 <div className="text-center">
                   <div className="border-b border-black mb-1 h-6 flex items-end justify-center font-bold">{data.issuerFullName}</div>
-                  <div className="text-[10pt]">(име, фамилия)</div>
+                  <div className="text-[10pt]">(име)</div>
                 </div>
                 <div className="text-center">
                   <div className="border-b border-black mb-1 h-6"></div>
@@ -602,8 +585,8 @@ export default function App() {
             </div>
 
             <div className="flex justify-between mt-6">
-              <div>Дата: <span className="underline px-4">{data.issueDate ? new Date(data.issueDate).toLocaleDateString('bg-BG') : '................'}</span></div>
-              <div>Място: <span className="underline px-4">{data.issuePlace || '................'}</span></div>
+              <div>Дата: <span className="px-4">{data.issueDate ? new Date(data.issueDate).toLocaleDateString('bg-BG') : '................'}</span></div>
+              <div>Място: <span className="px-4">{data.issuePlace || '................'}</span></div>
             </div>
 
             <div className="mt-6 text-[10pt] text-justify border-t border-black pt-2">

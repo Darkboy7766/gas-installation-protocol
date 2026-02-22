@@ -9,21 +9,12 @@ export interface GasProtocolData {
 
   // Section II: Vehicle
   vehicleRegNo: string;
-  vehicleVin: string;
   vehicleMake: string;
   vehicleModel: string;
-  vehicleCategory: string;
-  vehicleFirstRegDate: string;
-  vehicleFuelType: string;
-  vehicleEngineNo: string;
 
   // Section III: Owner
-  ownerName: string;
-  ownerId: string;
-  ownerAddress: string;
 
   // Section IV: Installation
-  installationDate: string;
   installationType: 'ВНГ' | 'СПГ';
   installationMake: string;
   installationModel: string;
@@ -32,10 +23,7 @@ export interface GasProtocolData {
   components: GasComponent[];
 
   // Signatures & Issuance
-  installerFullName: string;
-  ownerFullName: string;
   issuerFullName: string;
-  issuerPosition: string;
   issueDate: string;
   issuePlace: string;
 }
