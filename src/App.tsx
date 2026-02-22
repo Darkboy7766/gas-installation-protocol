@@ -13,9 +13,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Download,
-  Github,
-  ExternalLink,
-  Loader2
 } from 'lucide-react';
 import { GasProtocolData, INITIAL_COMPONENTS, GasComponent, COMPONENT_OPTIONS } from './types';
 
@@ -47,60 +44,12 @@ export default function App() {
   const [data, setData] = useState<GasProtocolData>(getInitialData);
   const [view, setView] = useState<'edit' | 'print'>('edit');
   const [activeStep, setActiveStep] = useState(0);
-  const [githubToken, setGithubToken] = useState<string | null>(null);
-  const [isPublishing, setIsPublishing] = useState(false);
-  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const dateStr = data.protocolDate ? `_${data.protocolDate}` : '';
     const numStr = data.protocolNumber ? `_No${data.protocolNumber}` : '';
     document.title = `Protokol_Gazova_Uredba${numStr}${dateStr}`;
   }, [data.protocolNumber, data.protocolDate]);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'GITHUB_AUTH_SUCCESS') {
-        setGithubToken(event.data.token);
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  const handleGithubConnect = async () => {
-    try {
-      const response = await fetch('/api/auth/github/url');
-      const { url } = await response.json();
-      window.open(url, 'github_oauth', 'width=600,height=700');
-    } catch (error) {
-      console.error('Failed to get GitHub auth URL:', error);
-      alert('Моля конфигурирайте GITHUB_CLIENT_ID в настройките.');
-    }
-  };
-
-  const handleGithubPublish = async () => {
-    if (!githubToken) return;
-    setIsPublishing(true);
-    try {
-      const repoName = `gas-protocol-app-${Math.floor(Math.random() * 10000)}`;
-      const response = await fetch('/api/github/push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: githubToken, repoName }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        setPublishedUrl(result.url);
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error: any) {
-      console.error('Failed to publish to GitHub:', error);
-      alert(`Грешка при качване: ${error.message}`);
-    } finally {
-      setIsPublishing(false);
-    }
-  };
 
   const steps = [
     { title: 'Обща информация', icon: <FileText className="w-5 h-5" /> },
@@ -146,26 +95,6 @@ export default function App() {
           </div>
           
           <div className="flex items-center gap-2">
-            {!githubToken ? (
-              <button
-                type="button"
-                onClick={handleGithubConnect}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 transition-all"
-              >
-                <Github className="w-4 h-4" />
-                <span className="hidden md:inline">Свържи с GitHub</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleGithubPublish}
-                disabled={isPublishing}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-all disabled:opacity-50"
-              >
-                {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Github className="w-4 h-4" />}
-                {isPublishing ? 'Качване...' : 'Качи в GitHub'}
-              </button>
-            )}
 
             <button
               type="button"
@@ -179,7 +108,6 @@ export default function App() {
               {view === 'edit' ? <Printer className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
               {view === 'edit' ? 'Преглед и Печат' : 'Обратно към редакция'}
             </button>
-            
             {view === 'print' && (
               <button
                 type="button"
@@ -428,20 +356,6 @@ export default function App() {
                         <h3 className="text-lg font-semibold text-green-900">Готови сте за печат!</h3>
                         <p className="text-green-800 mt-1">Прегледайте данните за последен път и генерирайте документа.</p>
                         
-                        {publishedUrl && (
-                          <div className="mt-4 p-4 bg-white rounded-lg border border-green-200 shadow-sm">
-                            <p className="text-sm font-medium text-gray-700 mb-2">Проектът е качен успешно в GitHub:</p>
-                            <a 
-                              href={publishedUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline flex items-center gap-2 text-sm break-all"
-                            >
-                              <ExternalLink className="w-4 h-4 shrink-0" />
-                              {publishedUrl}
-                            </a>
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -535,13 +449,26 @@ export default function App() {
               </div>
             </section>
 
-            <section className="mb-4">
+             <section className="mb-4">
               <h3 className="font-bold italic mb-2 text-[11pt]">III. Данни за монтираната уредба за ВНГ или СПГ:</h3>
-              <p className="ml-4 mb-2 text-[11pt]">
-                Марка: <span className="px-2 font-bold">{data.installationMake || '................'}</span>, 
-                модел: <span className="px-2 font-bold">{data.installationModel || '................'}</span>, 
-                състояща се от следните компоненти:
-              </p>
+              <div className="ml-4 mb-2 flex items-center gap-12 text-[11pt]">
+                <div className="flex items-center gap-2">
+                  <span className={`inline-block w-4 h-4 border border-black text-center leading-3.5 font-bold ${data.installationType === 'ВНГ' ? 'bg-gray-200' : ''}`}>
+                    {data.installationType === 'ВНГ' ? 'X' : ''}
+                  </span>
+                  <span>ВНГ (LPG)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`inline-block w-4 h-4 border border-black text-center leading-3.5 font-bold ${data.installationType === 'СПГ' ? 'bg-gray-200' : ''}`}>
+                    {data.installationType === 'СПГ' ? 'X' : ''}
+                  </span>
+                  <span>СПГ (CNG)</span>
+                </div>
+                </div>
+                <div className="flex-1">
+                  Марка: <span className="px-2 font-bold">{data.installationMake || '................'}</span>, 
+                  модел: <span className="px-2 font-bold">{data.installationModel || '................'}</span> състояща се от следните компоненти:
+                </div>
 
               <table className="w-full border-collapse border border-black text-[10pt]">
                 <thead>
