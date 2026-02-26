@@ -66,6 +66,7 @@ export const COMPONENT_OPTIONS: Record<string, Record<string, string[]>> = {
   },
   "Пълначно устройство": {
     "TOMASETTO": ["E8-67R01-3868"],
+    "BRC": ["Номер 2_1", "Номер 2_2"],
     "Марка2": ["Номер 2_1"],
   },
   "Изпарител": {
@@ -98,14 +99,14 @@ export const BRAND_KITS: Record<string, Partial<GasComponent>[]> = {
     { name: "Мултиклапан", make: "TOMASETTO", approvalNumber: "E8-67R01-3018" },
     { name: "Пълначно устройство", make: "TOMASETTO", approvalNumber: "E8-67R01-3868" },
     { name: "Изпарител", make: "TOMASETTO", approvalNumber: "E8-67R01-4065" },
-    { name: "Инжектори", make: "BARRACUDA", approvalNumber: "E8-67R01-6407" },
+    { name: "Инжектори", make: "RAIL", approvalNumber: "E8-67R01-430" },
     { name: "Електронен блок за управление", make: "AEB", approvalNumber: "E3-67R01-6019" },
     { name: "Тръби и маркучи за газ", make: "FARO", approvalNumber: "E13-67R02-0409" },
   ],
   "BRC": [
     { name: "Резервоар за гориво", make: "STEP", approvalNumber: "E7-67R01-612503" },
     { name: "Мултиклапан", make: "BRC", approvalNumber: "Номер 2_1" },
-    { name: "Пълначно устройство", make: "TOMASETTO", approvalNumber: "E8-67R01-3868" },
+    { name: "Пълначно устройство", make: "BRC", approvalNumber: "E8-67R01-3868" },
     { name: "Изпарител", make: "BRC", approvalNumber: "E13-67R01-0016" },
     { name: "Инжектори", make: "BRC", approvalNumber: "E13-67R03-0223" },
     { name: "Електронен блок за управление", make: "BRC", approvalNumber: "E3-67R01-1002" },
