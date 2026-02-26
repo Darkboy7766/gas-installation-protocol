@@ -16,12 +16,44 @@ import {
 } from 'lucide-react';
 import { GasProtocolData, INITIAL_COMPONENTS, GasComponent, COMPONENT_OPTIONS } from './types';
 
+// ДЕФИНИЦИЯ НА КОМПЛЕКТИТЕ ЗА АВТОМАТИЧНО ПОПЪЛВАНЕ
+const BRAND_KITS: Record<string, Partial<GasComponent>[]> = {
+  "AEB": [
+    { name: "Изпарител", make: "TOMASETTO", approvalNumber: "E8-67R01-4065" },
+    { name: "Инжектори", make: "BARRACUDA", approvalNumber: "E8-67R01-6407" },
+    { name: "Електронен блок за управление", make: "AEB", approvalNumber: "E3-67R01-6019" },
+  ],
+  "BRC": [
+    { name: "Мултиклапан", make: "BRC", approvalNumber: "Номер 2_1" },
+    { name: "Изпарител", make: "BRC", approvalNumber: "E13-67R01-0016" },
+    { name: "Инжектори", make: "BRC", approvalNumber: "E13-67R03-0223" },
+    { name: "Електронен блок за управление", make: "BRC", approvalNumber: "E3-67R01-1002" },
+  ],
+  "PRINS": [
+    { name: "Изпарител", make: "PRINS", approvalNumber: "E4-67R01-0358" },
+    { name: "Инжектори", make: "PRINS", approvalNumber: "E4-67R01-0093" },
+    { name: "Електронен блок за управление", make: "PRINS", approvalNumber: "E4-67R01-0098" },
+  ]
+};
+
 const today = new Date().toISOString().split('T')[0];
 
 const getInitialData = (): GasProtocolData => {
+  // 1. Вземаме последния номер от паметта на браузъра
   const lastNum = typeof window !== 'undefined' ? localStorage.getItem('lastProtocolNumber') : '';
+  
+  // 2. Логика за автоматично увеличаване (+1)
+  let nextNum = '';
+  if (lastNum && !isNaN(Number(lastNum))) {
+    // Ако последният номер е число, добавяме 1 към него
+    nextNum = (Number(lastNum) + 1).toString();
+  } else if (lastNum) {
+    // Ако не е само число (напр. "2024-05"), оставяме стария, за да не стане грешка
+    nextNum = lastNum;
+  }
+
   return {
-    protocolNumber: lastNum || '',
+    protocolNumber: nextNum, // Тук вече автоматично се попълва новият номер
     protocolDate: today,
     installerName: 'Аутогаз-Варна ООД',
     installerId: '202347382',
@@ -58,11 +90,32 @@ export default function App() {
     { title: 'Финализиране', icon: <CheckCircle2 className="w-5 h-5" /> },
   ];
 
+  // НОВАТА ФУНКЦИЯ ЗА АВТОМАТИЧНО ПОПЪЛВАНЕ
+  const handleInstallationMakeChange = (brand: string) => {
+    let updatedComponents = [...data.components];
+
+    if (BRAND_KITS[brand]) {
+      updatedComponents = INITIAL_COMPONENTS.map((baseComp) => {
+        const kitItem = BRAND_KITS[brand].find(k => k.name === baseComp.name);
+        return {
+          ...baseComp,
+          make: kitItem?.make || "",
+          approvalNumber: kitItem?.approvalNumber || ""
+        };
+      });
+    }
+
+    setData(prev => ({
+      ...prev,
+      installationMake: brand,
+      components: updatedComponents
+    }));
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setData(prev => {
       const newData = { ...prev, [name]: value };
-      // Sync dates if protocol date changes
       if (name === 'protocolDate') {
         newData.installationDate = value;
         newData.issueDate = value;
@@ -77,14 +130,11 @@ export default function App() {
     setData(prev => ({ ...prev, components: newComponents }));
   };
 
-  const filteredComponents = data.components;
-
   const nextStep = () => setActiveStep(prev => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setActiveStep(prev => Math.max(prev - 1, 0));
 
   return (
     <div className="min-h-screen print:min-h-0 bg-[#F8F9FA] text-[#1A1A1A] font-sans selection:bg-blue-100">
-      {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -95,7 +145,6 @@ export default function App() {
           </div>
           
           <div className="flex items-center gap-2">
-
             <button
               type="button"
               onClick={() => setView(view === 'edit' ? 'print' : 'edit')}
@@ -130,17 +179,11 @@ export default function App() {
             )}
           </div>
         </div>
-        {view === 'print' && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 text-center text-xs text-gray-400 print:hidden">
-            Ако бутонът не реагира, натиснете <kbd className="px-1 py-0.5 rounded bg-gray-100 border border-gray-300 font-sans">Ctrl + P</kbd> за печат
-          </div>
-        )}
       </header>
 
       <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${view === 'print' ? 'print:p-0 print:m-0' : ''}`}>
         {view === 'edit' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Sidebar Navigation */}
             <div className="lg:col-span-3 space-y-1">
               {steps.map((step, idx) => (
                 <button
@@ -162,7 +205,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* Form Content */}
             <div className="lg:col-span-9">
               <motion.div
                 key={activeStep}
@@ -227,10 +269,24 @@ export default function App() {
                             <option value="СПГ">СПГ (CNG)</option>
                           </select>
                         </div>
-                        
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-                        <FormField label="Марка на уредбата" name="installationMake" value={data.installationMake} onChange={handleInputChange} />
+                        {/* ТУК Е ПРОМЕНЕНОТО ПАДАЩО МЕНЮ */}
+                        <div className="space-y-1.5">
+                          <label className="block text-sm font-semibold text-gray-700">Марка на уредбата</label>
+                          <select 
+                            name="installationMake"
+                            value={data.installationMake}
+                            onChange={(e) => handleInstallationMakeChange(e.target.value)}
+                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                          >
+                            <option value="">Изберете марка...</option>
+                            <option value="AEB">AEB</option>
+                            <option value="BRC">BRC</option>
+                            <option value="PRINS">PRINS</option>
+                            <option value="Друга">Друга</option>
+                          </select>
+                        </div>
                         <FormField label="Модел на уредбата" name="installationModel" value={data.installationModel} onChange={handleInputChange} />
                       </div>
                     </div>
@@ -268,7 +324,7 @@ export default function App() {
                                             const newComponents = [...data.components];
                                             newComponents[idx] = { 
                                               ...newComponents[idx], 
-                                              make: val === 'other' ? ' ' : val, // Use a space as a temporary "other" value
+                                              make: val === 'other' ? ' ' : val,
                                               approvalNumber: '' 
                                             };
                                             setData(prev => ({ ...prev, components: newComponents }));
@@ -299,7 +355,6 @@ export default function App() {
                                   {(() => {
                                     const makeOptions = COMPONENT_OPTIONS[comp.name]?.[comp.make] || [];
                                     const isCustom = comp.approvalNumber !== '' && !makeOptions.includes(comp.approvalNumber);
-                                    const hasPredefinedOptions = makeOptions.length > 0;
 
                                     return (
                                       <>
@@ -355,7 +410,6 @@ export default function App() {
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-green-900">Готови сте за печат!</h3>
                         <p className="text-green-800 mt-1">Прегледайте данните за последен път и генерирайте документа.</p>
-                        
                       </div>
                     </div>
 
@@ -382,7 +436,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
                 <div className="mt-12 flex items-center justify-between pt-6 border-t border-gray-100">
                   <button
                     type="button"
@@ -418,7 +471,6 @@ export default function App() {
             </div>
           </div>
         ) : (
-          /* Print View */
           <div className="print-container max-w-[210mm] mx-auto bg-white shadow-2xl print:shadow-none p-[10mm] text-[12pt] leading-relaxed font-serif">
             <div className="text-center mb-8">
               <h2 className="text-[16pt] font-bold mb-2">Протокол № {data.protocolNumber || '.........'} / {data.protocolDate ? new Date(data.protocolDate).toLocaleDateString('bg-BG') : '..........'}</h2>
@@ -434,7 +486,7 @@ export default function App() {
                 <PrintField label="Наименование" value={data.installerName} className="flex-none" />
                 <PrintField label="ЕГН/БУЛСТАТ/ЕИК" value={data.installerId} className="flex-none" />
                 <PrintField label="Адрес" value={data.installerAddress} className="flex-none" />
-                <PrintField label='Телефон' value='Тел: 052 50 12 19' className='flex-none' />
+                <PrintField label='Телефон' value='052 50 12 19' className='flex-none' />
               </div>
             </section>
 
@@ -465,12 +517,12 @@ export default function App() {
                   <span>СПГ (CNG)</span>
                 </div>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-[11pt]">
                   Марка: <span className="px-2 font-bold">{data.installationMake || '................'}</span>, 
                   модел: <span className="px-2 font-bold">{data.installationModel || '................'}</span> състояща се от следните компоненти:
                 </div>
 
-              <table className="w-full border-collapse border border-black text-[10pt]">
+              <table className="w-full border-collapse border border-black text-[10pt] mt-2">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="border border-black px-2 py-1 w-8">№</th>
@@ -524,7 +576,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-8 mt-12 print:hidden">
         <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
           <p>© {new Date().getFullYear()} Протокол за Газова Уредба. Създаден съгласно Наредба № Н-3.</p>

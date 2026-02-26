@@ -91,3 +91,33 @@ export const COMPONENT_OPTIONS: Record<string, Record<string, string[]>> = {
     "FARO": ["E13-67R02-0409"],
   },
 };
+
+export const BRAND_KITS: Record<string, Partial<GasComponent>[]> = {
+  "AEB": [
+    { name: "Резервоар за гориво", make: "STEP", approvalNumber: "E7-67R01-612503" },
+    { name: "Мултиклапан", make: "TOMASETTO", approvalNumber: "E8-67R01-3018" },
+    { name: "Пълначно устройство", make: "TOMASETTO", approvalNumber: "E8-67R01-3868" },
+    { name: "Изпарител", make: "TOMASETTO", approvalNumber: "E8-67R01-4065" },
+    { name: "Инжектори", make: "BARRACUDA", approvalNumber: "E8-67R01-6407" },
+    { name: "Електронен блок за управление", make: "AEB", approvalNumber: "E3-67R01-6019" },
+    { name: "Тръби и маркучи за газ", make: "FARO", approvalNumber: "E13-67R02-0409" },
+  ],
+  "BRC": [
+    { name: "Резервоар за гориво", make: "STEP", approvalNumber: "E7-67R01-612503" },
+    { name: "Мултиклапан", make: "BRC", approvalNumber: "Номер 2_1" },
+    { name: "Пълначно устройство", make: "TOMASETTO", approvalNumber: "E8-67R01-3868" },
+    { name: "Изпарител", make: "BRC", approvalNumber: "E13-67R01-0016" },
+    { name: "Инжектори", make: "BRC", approvalNumber: "E13-67R03-0223" },
+    { name: "Електронен блок за управление", make: "BRC", approvalNumber: "E3-67R01-1002" },
+    { name: "Тръби и маркучи за газ", make: "FARO", approvalNumber: "E13-67R02-0409" },
+  ],
+  "PRINS": [
+    { name: "Резервоар за гориво", make: "STEP", approvalNumber: "E7-67R01-612503" },
+    { name: "Мултиклапан", make: "TOMASETTO", approvalNumber: "E8-67R01-3018" },
+    { name: "Пълначно устройство", make: "TOMASETTO", approvalNumber: "E8-67R01-3868" },
+    { name: "Изпарител", make: "PRINS", approvalNumber: "E4-67R01-0358" },
+    { name: "Инжектори", make: "PRINS", approvalNumber: "E4-67R01-0093" },
+    { name: "Електронен блок за управление", make: "PRINS", approvalNumber: "E4-67R01-0098" },
+    { name: "Тръби и маркучи за газ", make: "FARO", approvalNumber: "E13-67R02-0409" },
+  ]
+};
