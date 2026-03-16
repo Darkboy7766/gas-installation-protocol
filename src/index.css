@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Times New Roman", Times, serif;
+}
+
+@layer base {
+  @media print {
+    @page {
+      margin: 0;
+      size: auto;
+    }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+    .print-container {
+      margin: 0 !important;
+      padding: 10mm !important;
+      height: auto !important;
+      min-height: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+}
